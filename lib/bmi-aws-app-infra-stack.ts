@@ -34,20 +34,20 @@ export class BmiAwsAppInfraStack extends Stack {
       keyName: 'rgederin-lohika-2021-us-west-2',
     });
 
-    const privateEc2Instace = new PrivateEC2Instance(this, 'rgd-private-ec2', {
+    const privateEc2Instace = new PrivateEC2Instance(this, 'bmi-private-ec2', {
       vpc: bmiAppVpc.vpc,
       securityGroup: privateSecurityGroup.securityGroup,
       keyName: 'rgederin-lohika-2021-us-west-2',
     })
 
-    const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'rgd-load-balancer', {
+    const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'bmi-load-balancer', {
       vpc: bmiAppVpc.vpc,
       asg: publicAutoscalingGroup.autoScalingGroup,
       securityGroup: publicSecurityGroup.securityGroup
     });
 
     const sqsQueue = new SqsQueue(this, 'bmi-sqs', { queueName: 'bmi-queue' });
-    const snsTopic = new SnsNotification(this, 'rgd-bmi-sns', { topicName: 'rgd-bmi-topic' });
+    const snsTopic = new SnsNotification(this, 'bmi-sns', { topicName: 'bmi-topic' });
 
     const dynamodbTable = new DynamodbTable(this, 'bmi-dynamodb', {
       tableName: 'bmi-table',
