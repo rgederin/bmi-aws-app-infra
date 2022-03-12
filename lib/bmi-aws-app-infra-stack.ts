@@ -34,42 +34,42 @@ export class BmiAwsAppInfraStack extends Stack {
       keyName: 'rgederin-lohika-2021-us-west-2',
     });
 
-    //   const privateEc2Instace = new PrivateEC2Instance(this, 'bmi-private-ec2', {
-    //     vpc: bmiAppVpc.vpc,
-    //     securityGroup: privateSecurityGroup.securityGroup,
-    //     keyName: 'rgederin-lohika-2021-us-west-2',
-    //   })
+    const privateEc2Instace = new PrivateEC2Instance(this, 'bmi-private-ec2', {
+      vpc: bmiAppVpc.vpc,
+      securityGroup: privateSecurityGroup.securityGroup,
+      keyName: 'rgederin-lohika-2021-us-west-2',
+    })
 
-    //   const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'bmi-load-balancer', {
-    //     vpc: bmiAppVpc.vpc,
-    //     asg: publicAutoscalingGroup.autoScalingGroup,
-    //     securityGroup: publicSecurityGroup.securityGroup
-    //   });
+    const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'bmi-load-balancer', {
+      vpc: bmiAppVpc.vpc,
+      asg: publicAutoscalingGroup.autoScalingGroup,
+      securityGroup: publicSecurityGroup.securityGroup
+    });
 
-    //   const sqsQueue = new SqsQueue(this, 'bmi-sqs', { queueName: 'bmi-queue' });
-    //   const snsTopic = new SnsNotification(this, 'bmi-sns', { topicName: 'bmi-topic' });
+    const sqsQueue = new SqsQueue(this, 'bmi-sqs', { queueName: 'bmi-queue' });
+    const snsTopic = new SnsNotification(this, 'bmi-sns', { topicName: 'bmi-topic' });
 
-    //   const dynamodbTable = new DynamodbTable(this, 'bmi-dynamodb', {
-    //     tableName: 'bmi-table',
-    //     partitionKey: {
-    //       name: 'id',
-    //       type: dynamodb.AttributeType.STRING,
-    //     },
-    //   });
+    const dynamodbTable = new DynamodbTable(this, 'bmi-dynamodb', {
+      tableName: 'bmi-table',
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
 
-    //   const rdsInstance = new RdsInstance(this, 'bmi-rds', {
-    //     vpc: bmiAppVpc.vpc,
-    //     securityGroup: privateSecurityGroup.securityGroup,
-    //     databaseName: 'bmi'
-    //   });
+    const rdsInstance = new RdsInstance(this, 'bmi-rds', {
+      vpc: bmiAppVpc.vpc,
+      securityGroup: privateSecurityGroup.securityGroup,
+      databaseName: 'bmi'
+    });
 
-    //   dynamodbTable.table.grantFullAccess(publicAutoscalingGroup.autoScalingGroup);
+    dynamodbTable.table.grantFullAccess(publicAutoscalingGroup.autoScalingGroup);
 
-    //   sqsQueue.sqs.grantSendMessages(publicAutoscalingGroup.autoScalingGroup);
-    //   snsTopic.topic.grantPublish(publicAutoscalingGroup.autoScalingGroup);
+    sqsQueue.sqs.grantSendMessages(publicAutoscalingGroup.autoScalingGroup);
+    snsTopic.topic.grantPublish(publicAutoscalingGroup.autoScalingGroup);
 
-    //   sqsQueue.sqs.grantConsumeMessages(privateEc2Instace.instance);
-    //   snsTopic.topic.grantPublish(privateEc2Instace.instance);
-    // }
+    sqsQueue.sqs.grantConsumeMessages(privateEc2Instace.instance);
+    snsTopic.topic.grantPublish(privateEc2Instace.instance);
   }
+}
 }
