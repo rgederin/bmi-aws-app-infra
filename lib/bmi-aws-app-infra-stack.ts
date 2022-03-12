@@ -72,4 +72,3 @@ export class BmiAwsAppInfraStack extends Stack {
     snsTopic.topic.grantPublish(privateEc2Instace.instance);
   }
 }
-}

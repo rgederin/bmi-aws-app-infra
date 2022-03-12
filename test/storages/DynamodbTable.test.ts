@@ -1,12 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { Template, Capture } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { DynamodbTable } from '../../lib/storages/DynamodbTable';
 
 test('Dynamodb Table Created With Properties', () => {
     const stack = new cdk.Stack();
 
-    new DynamodbTable(stack, 'TestBmiDynamoDbTable', {
+    new DynamodbTable(stack, 'TestDynamoDbTable', {
         tableName: 'bmi-table',
         partitionKey: {
             name: 'id',

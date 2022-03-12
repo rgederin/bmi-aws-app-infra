@@ -1,9 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Template } from 'aws-cdk-lib/assertions';
-import { PrivateEC2Instance } from '../../lib/instances/PrivateEC2Instance';
+import { RdsInstance } from '../../lib/storages/RdsInstance'
 
-test('Privare EC2 instance Created', () => {
+
+test('RDS instance Created', () => {
     const stack = new cdk.Stack(undefined, 'id', {
         env: { account: '530260462866', region: 'us-west-2' },
     });
@@ -25,12 +26,21 @@ test('Privare EC2 instance Created', () => {
         allowAllOutbound: true,
     });
 
-    new PrivateEC2Instance(stack, 'test-private-ec2', {
+    new RdsInstance(stack, 'test-rds-instance', {
         vpc, securityGroup,
-        keyName: 'test-key-name'
+        databaseName: 'test-db'
     })
 
     const template = Template.fromStack(stack);
 
-    template.resourceCountIs('AWS::EC2::Instance', 2);
+    template.resourceCountIs('AWS::RDS::DBInstance', 1);
+
+    template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBInstanceClass: 'db.t3.micro',
+        AllocatedStorage: '10',
+        DBName: 'test-db',
+        Engine: 'postgres',
+        PubliclyAccessible: false,
+        MultiAZ: false
+    });
 });

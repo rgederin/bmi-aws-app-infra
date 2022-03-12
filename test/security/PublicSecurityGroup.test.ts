@@ -1,12 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Template, Capture } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { PublicSecurityGroup } from '../../lib/security/PublicSecurityGroup';
 
 test('Public Security Group Created With Properties', () => {
     const stack = new cdk.Stack();
 
-    const vpc = new ec2.Vpc(stack, 'my-cdk-vpc', {
+    const vpc = new ec2.Vpc(stack, 'test-vpc', {
         cidr: '10.0.0.0/16',
         natGateways: 0,
         subnetConfiguration: [
