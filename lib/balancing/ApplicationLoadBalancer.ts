@@ -1,12 +1,8 @@
 import { Duration, CfnOutput } from 'aws-cdk-lib';
-
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-
-
 import { Construct } from 'constructs';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 interface ApplicationLoadBalancerProps {
     vpc: ec2.Vpc
