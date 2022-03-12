@@ -26,6 +26,10 @@ export class PublicAutoScalingGroup extends Construct {
             'systemctl start httpd',
             'systemctl enable httpd',
             'echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html',
+            'sudo amazon-linux-extras install docker -y',
+            'sudo service docker start',
+            'sudo usermod -a -G docker ec2-user',
+            'sudo chkconfig docker on'
         );
 
         this.autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
