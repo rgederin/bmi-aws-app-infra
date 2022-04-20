@@ -6,6 +6,9 @@ interface PublicAutoScalingGroupProps {
     vpc: ec2.Vpc;
     securityGroup: ec2.SecurityGroup;
     keyName: string;
+    dynamodbTable: string,
+    sqsUrl: string,
+    snsTopicArn: string
 }
 
 export class PublicAutoScalingGroup extends Construct {
@@ -14,7 +17,7 @@ export class PublicAutoScalingGroup extends Construct {
     constructor(scope: Construct, id: string, props: PublicAutoScalingGroupProps) {
         super(scope, id);
 
-        const { vpc, keyName, securityGroup } = props;
+        const { vpc, keyName, securityGroup, dynamodbTable, sqsUrl, snsTopicArn } = props;
         const linuxAmi = new ec2.AmazonLinuxImage({
             generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
         });
@@ -22,14 +25,14 @@ export class PublicAutoScalingGroup extends Construct {
 
         userData.addCommands(
             'sudo su',
-            'yum install -y httpd',
-            'systemctl start httpd',
-            'systemctl enable httpd',
-            'echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html',
-            'sudo amazon-linux-extras install docker -y',
-            'sudo service docker start',
-            'sudo usermod -a -G docker ec2-user',
-            'sudo chkconfig docker on'
+            'amazon-linux-extras install docker -y',
+            'service docker start',
+            'usermod -a -G docker ec2-user',
+            'chkconfig docker on',
+            'docker run --name bmi-api-service -p 80:8080 --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} --env NODE_ENV=production --env AWS_REGION=us-west-2 --env DYNAMODB_TABLE=' 
+                + dynamodbTable + ' --env SQS_URL=' 
+                + sqsUrl + ' --env TOPIC_URL=' 
+                + snsTopicArn + ' rgederin/bmi-api-image'
         );
 
         this.autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {

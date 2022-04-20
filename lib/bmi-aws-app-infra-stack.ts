@@ -28,23 +28,11 @@ export class BmiAwsAppInfraStack extends Stack {
       vpc: bmiAppVpc.vpc
     });
 
-    const publicAutoscalingGroup = new PublicAutoScalingGroup(this, 'bmi-public-instances', {
-      vpc: bmiAppVpc.vpc,
-      securityGroup: publicSecurityGroup.securityGroup,
-      keyName: 'rgederin-lohika-2021-us-west-2',
-    });
-
     const privateEc2Instace = new PrivateEC2Instance(this, 'bmi-private-ec2', {
       vpc: bmiAppVpc.vpc,
       securityGroup: privateSecurityGroup.securityGroup,
       keyName: 'rgederin-lohika-2021-us-west-2',
     })
-
-    const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'bmi-load-balancer', {
-      vpc: bmiAppVpc.vpc,
-      asg: publicAutoscalingGroup.autoScalingGroup,
-      securityGroup: publicSecurityGroup.securityGroup
-    });
 
     const sqsQueue = new SqsQueue(this, 'bmi-sqs', { queueName: 'bmi-queue' });
     const snsTopic = new SnsNotification(this, 'bmi-sns', { topicName: 'bmi-topic' });
@@ -52,7 +40,7 @@ export class BmiAwsAppInfraStack extends Stack {
     const dynamodbTable = new DynamodbTable(this, 'bmi-dynamodb', {
       tableName: 'bmi-table',
       partitionKey: {
-        name: 'id',
+        name: 'Id',
         type: dynamodb.AttributeType.STRING,
       },
     });
@@ -61,6 +49,21 @@ export class BmiAwsAppInfraStack extends Stack {
       vpc: bmiAppVpc.vpc,
       securityGroup: privateSecurityGroup.securityGroup,
       databaseName: 'bmi'
+    });
+
+    const publicAutoscalingGroup = new PublicAutoScalingGroup(this, 'bmi-public-instances', {
+      vpc: bmiAppVpc.vpc,
+      securityGroup: publicSecurityGroup.securityGroup,
+      keyName: 'rgederin-lohika-2021-us-west-2',
+      dynamodbTable: dynamodbTable.table.tableName,
+      sqsUrl: sqsQueue.sqs.queueUrl,
+      snsTopicArn: snsTopic.topic.topicArn
+    });
+
+    const applicationLoadBalancer = new ApplicationLoadBalancer(this, 'bmi-load-balancer', {
+      vpc: bmiAppVpc.vpc,
+      asg: publicAutoscalingGroup.autoScalingGroup,
+      securityGroup: publicSecurityGroup.securityGroup
     });
 
     dynamodbTable.table.grantFullAccess(publicAutoscalingGroup.autoScalingGroup);
